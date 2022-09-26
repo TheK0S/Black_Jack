@@ -1,0 +1,350 @@
+#include <iostream>
+#include<string>
+#include<time.h>
+using namespace std;
+
+enum Suits
+{
+    NoSuit, diamonds, hearts, clubs, spades
+};
+/*
+enum NameCards
+{
+    NoName, Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Quinn, King
+};
+*/
+enum UserChoice
+{
+    add_card = 1, show_cards
+};
+class Card
+{
+public:
+    Card()
+    {
+        name = "";
+        suit = 0;
+        index = 0;
+        points = 0;
+    }
+    Card(string name, int suit, int index, int points)
+    {
+        this->name = name;
+        this->suit = suit;
+        this->index = index;
+        this->points = points;
+    }
+    Card(const Card& other)
+    {
+        this->name = other.name;
+        this->suit = other.suit;
+        this->index = other.index;
+        this->points = other.points;
+    }
+    
+    Card& operator=(const Card& other)
+    {
+        this->name = other.name;
+        this->suit = other.suit;
+        this->index = other.index;
+        this->points = other.points;
+        return *this;
+    }
+    int GetPoints() { return points; }
+    void Print(string arrLine[8])
+    {
+        arrLine[0] = " ------- ";
+        switch (this->suit)
+        {
+        case diamonds:
+            arrLine[1] = "| " + name + "    |";
+            arrLine[2] = "|   *   |";
+            arrLine[3] = "|  ***  |";
+            arrLine[4] = "| ***** |";
+            arrLine[5] = "|  ***  |";
+            arrLine[6] = "|   *   |";
+            arrLine[7] = "|    " + name + " |";
+            break;
+        case spades:
+            arrLine[1] = "| " + name + "    |";
+            arrLine[2] = "|   *   |";
+            arrLine[3] = "|  ***  |";
+            arrLine[4] = "| ***** |";
+            arrLine[5] = "|   *   |";
+            arrLine[6] = "|  ***  |";
+            arrLine[7] = "|    " + name + " |";
+            break;
+        case hearts:
+            arrLine[1] = "| " + name + "    |";
+            arrLine[2] = "|  * *  |";
+            arrLine[3] = "| ***** |";
+            arrLine[4] = "| ***** |";
+            arrLine[5] = "|  ***  |";
+            arrLine[6] = "|   *   |";
+            arrLine[7] = "|    " + name + " |";
+            break;
+        case clubs:
+            arrLine[1] = "| " + name + "    |";
+            arrLine[2] = "|   *   |";
+            arrLine[3] = "|   *   |";
+            arrLine[4] = "| ***** |";
+            arrLine[5] = "|   *   |";
+            arrLine[6] = "|  ***  |";
+            arrLine[7] = "|    " + name + " |";
+            break;
+        default:
+            break;
+        }
+    }
+    void Print()
+    {
+        switch (this->suit)
+        {
+        case diamonds:
+            cout << "\n ------- \n| " << name << "    |\n|   *   |\n|  ***  |\n| ***** |\n|  ***  |\n|   *   |\n|    " << name << " |\n ------- ";
+            break;
+        case spades:
+            cout << "\n ------- \n| " << name << "    |\n|   *   |\n|  ***  |\n| ***** |\n|   *   |\n|  ***  |\n|    " << name << " |\n ------- ";
+            break;
+        case hearts:
+            cout << "\n ------- \n| " << name << "    |\n|  * *  |\n| ***** |\n| ***** |\n|  ***  |\n|   *   |\n|    " << name << " |\n ------- ";
+            break;
+        case clubs:
+            cout << "\n ------- \n| " << name << "    |\n|   *   |\n|   *   |\n| ***** |\n|   *   |\n|  ***  |\n|    " << name << " |\n ------- ";
+            break;
+        default:
+            break;
+        }
+    }
+private:
+    string name;
+    int suit;
+    int index;
+    int points;
+};
+class Deck
+{
+public:
+    void FillDeck()
+    {
+        int k = 0;
+        int l = 0;
+        const int SIZE1 = 13;
+        string nameKard[SIZE1] = { "A ", "2 ", "3 ", "4 ", "5 ", "6 ", "7 ", "8 ", "9 ", "10", "J ", "Q ", "K " };
+        for (int i = Suits::diamonds; i < 5; i++)
+        {
+            for (int j = 0; j < SIZE1; j++)
+            {
+                if (j < 10) l = j + 1;
+                else l = 10;
+                deck[k] = Card(nameKard[j], i, k, l);
+                k++;
+            }
+        }
+    }
+    void ShuffleTheDeck()
+    {
+        Card temp;
+        int j;
+        for (int i = 0; i < SIZE; i++)
+        {
+            j = rand() % 51;
+            temp = deck[j];
+            deck[j] = deck[i];
+            deck[i] = temp;
+        }
+
+    }
+    Card& GetRundomCard()
+    {
+        int i = rand() % 51;
+        return deck[i];
+    }
+    void PrintDeck()
+    {
+        for (auto object : deck)
+        {
+            object.Print();
+        }
+    }
+    Card GetCard(int index)
+    {
+        return deck[index];
+    }
+private:
+    static const int SIZE = 52;
+    Card deck[SIZE];
+};
+class Human
+{
+public:
+    Human()
+    {
+        size = 0;
+        arrCards = nullptr;
+    }
+    ~Human()
+    {
+        if (arrCards != nullptr)
+        {
+            delete[] arrCards;
+        }
+    }
+    void addCard(const Card &card)
+    {
+        if (size == 0)
+        {
+            arrCards = new Card[1];
+            arrCards[0] = card;
+        }
+        else
+        {
+            Card *temp = new Card[size + 1];
+            for (int i = 0; i < size; i++)
+            {
+                temp[i] = arrCards[i];
+            }
+            temp[size] = card;
+            delete[] arrCards;
+            arrCards = temp;
+            temp = nullptr;
+        }
+        this->size++;
+    }
+    void PrintCards(string arrLine[8])
+    {
+        string arrPrint[8] = { "" };//Массив для вывода нескольких карт в одну строчку
+        for (int i = 0; i < size; i++)
+        {
+            arrCards[i].Print(arrLine);
+            for (int i = 0; i < 8; i++)
+            {
+                arrPrint[i] += arrLine[i] + " ";//Суммируем строки всех карт
+            }
+        }
+        for (int i = 0; i < 8; i++)
+        {
+            cout << "\n" << arrPrint[i];
+        }
+        cout << "\n" << arrPrint[0];
+    }
+    int CountCards()
+    {
+        int sum = 0;
+        int temp = 0;
+        for (int i = 0; i < size; i++)
+        {
+            sum += arrCards[i].GetPoints();
+            if (arrCards[i].GetPoints() == 1) { temp = 10; }
+        }
+        if (sum <= 10) { sum += temp; }
+        return sum;
+    }
+    void Clean()
+    {
+        if (size > 0)
+        {
+            size = 0;
+            delete[] arrCards;
+            arrCards = nullptr;
+        }
+    }
+protected:
+    int size;
+    Card* arrCards;
+};
+class Crupier: public Human
+{  
+};
+class Player : public Human
+{
+};
+int main()
+{
+    string arr[8];
+    srand(time(NULL));
+    Deck card_deck;
+    card_deck.FillDeck();
+    Player player_1;
+    Crupier crupier_1;
+    int playerPoints;
+    int key = 0;
+    while (1)
+    {
+        card_deck.ShuffleTheDeck();//Перемешать колоду
+        crupier_1.addCard(card_deck.GetCard(rand() % 51));//Начальная карта крупье
+        crupier_1.addCard(card_deck.GetCard(rand() % 51));//Начальная карта крупье
+
+        player_1.addCard(card_deck.GetCard(rand() % 51));//Начальная карта игрока
+        player_1.addCard(card_deck.GetCard(rand() % 51));//Начальная карта игрока
+        player_1.PrintCards(arr);
+        cout << "\nYour points: " << player_1.CountCards();
+        while (1)
+        {
+            while (1)
+            {
+                cout << "\nEnter your choice:";
+                cout << "\n1 - get card";
+                cout << "\n2 - show cards";
+                cout << "\n3 - exit game";
+                cout << "\n4 - new game\n";
+                cin >> key;
+                if (key > 0 && key < 5) break;
+            }
+            if (key == 3 || key == 4)
+            {
+                crupier_1.Clean();
+                player_1.Clean();
+                break;
+            }
+            switch (key)
+            {
+            case add_card:
+                player_1.addCard(card_deck.GetCard(rand() % 51));//Добавить случайную карту игроку
+                player_1.PrintCards(arr);
+                playerPoints = player_1.CountCards();
+                if (playerPoints > 21)
+                {
+                    cout << "\nYou lose!!!\nYour points: " << playerPoints;
+                    key = 4;//Выход из цикла
+                    cout << "\nCasino points: " << crupier_1.CountCards();
+                    crupier_1.PrintCards(arr);
+                }
+                else
+                {
+                    cout << "\nYour points : " << playerPoints;
+                }
+                break;
+            case show_cards://Вывод карт игрока и крупье на экран
+                cout << "\nCasino points: " << crupier_1.CountCards();
+                crupier_1.PrintCards(arr);
+                cout << "\nPlayer points: " << player_1.CountCards();
+                player_1.PrintCards(arr);
+                if (crupier_1.CountCards() > player_1.CountCards())
+                {
+                    cout << "\nCasino WIN!!!";
+                }
+                else if (crupier_1.CountCards() < player_1.CountCards())
+                {
+                    cout << "\nCongratulation\tYOU WIN!!!";
+                }
+                else
+                {
+                    cout << "\nDraw";
+                }
+                key = 4;//Выход из цикла
+                break;
+            default:
+                break;
+            }
+            player_1.Clean();
+            crupier_1.Clean();
+            cout << "\n";
+            system("pause");
+            if (key == 3 || key == 4) break;
+        }
+        if (key == 3) break;
+    }
+
+    return 0;
+}
